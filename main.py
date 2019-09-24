@@ -17,6 +17,8 @@ def main():
     subs.add_parser('add -A .', help="add all files")
     ci = subs.add_parser('commit', help="add all files")
     ci.add_argument('-m', metavar="comment")
+    ci = subs.add_parser('push', help="push to origin")
+    
     parser.parse_args()
 
 
