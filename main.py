@@ -205,8 +205,9 @@ def main():
   pprint(goo)
   print(stylize('$: ' + final_command, fg("green") + attr("bold")))
 
-  # run command 
-  os.system(final_command)
+  # run commands
+  for cmd in git_cmd:
+    os.system(cmd)
 
   # exit(0)
   # if('cmds' in args):
