@@ -171,8 +171,8 @@ isGitDir = os.system('git status 1>'+os.devnull) == 0
   clear_before_run=True, # TEST
   show_success_modal=False,
   # poll_external_updates=True,
-  # progress_regex=r"^(?P<stat>.*)$",
-  # progress_expr="stat",
+  progress_regex=r"^(?P<stat>.*)$",
+  progress_expr="stat",
   richtext_controls=True,
   requires_shell=True,
   supress_gooey_flag=True,
@@ -226,49 +226,6 @@ def main():
   # run commands
   for cmd in git_cmd:
     os.system(cmd)
-
-  # exit(0)
-  # if('cmds' in args):
-  #   print(args.cmds)
-    # if(args.cmds == 'add'):
-    #   os.system('git add -A .')
-    # else:
-    #   print(args.git)
-    #   os.system('git ' + a)
-  # if(isGitDir):
-  #   gitDir = git.add_parser('settings', help='settings')
-  #   branch_list = list_branches()
-  #   gitDir.add_argument('--branch',
-  #     metavar="Current: " + branch_list[0],
-  #     help='Change branch',
-  #     choices=branch_list,
-  #     widget='Dropdown',
-  #     gooey_options={'message':'blah'})
-
-  #   git.add_parser('status', help="status")
-  #   gitAdd = git.add_parser('add', help="add files")
-  #   gitAddOpts = gitAdd.add_argument_group('Blah')
-  #   gitAddOpts.add_argument('-A', help="status", widget='CheckBox')
-  #   gitAddOpts.add_argument('-B', help="status", widget='CheckBox')
-  #   gitCi = git.add_parser('commit', help="add all files")
-  #   gitCi.add_argument('-m', metavar="comment", widget='Textarea')
-  #   gitPush = git.add_parser('push', help="push to origin")
-  # else:
-  #   gitDir = gooit.add_subparsers(help='git', dest='git')
-  #   gitDir.add_argument(metavar="directory path", dest='cwd', help='Choose directory', widget='FileChooser')
-
-  # args = gooit.parse_args()
-  # # print(args)
-  # # # args2 = git.parse_args()
-  # if('branch' in args):
-  #   print(args.branch)
-  # if('git' in args):
-  #   if(args.git == 'add'):
-  #     os.system('git add -A .')
-  #   else:
-  #     print(args.git)
-  #     os.system('git ' + args.git)
-
 
 if __name__ == '__main__':
   main()
