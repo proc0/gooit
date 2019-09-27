@@ -155,7 +155,7 @@ isGitDir = os.system('git status 1>'+os.devnull) == 0
   # progress_regex=r"^(?P<stat>.*)$",
   # progress_expr="stat",
   richtext_controls=True,
-  # requires_shell=True,
+  requires_shell=True,
   supress_gooey_flag=True,
   navigation='TABBED',
   optional_cols=4,
