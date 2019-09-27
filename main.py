@@ -3,6 +3,22 @@ from pprint import pprint
 import json, os, sys
 from colored import stylize, attr, fg
 
+def list_branches():
+  git_branches = os.popen('git branch').read().split()
+  cur_branch = False
+  branches = []
+  for idx, val in enumerate(git_branches):
+    br = val
+    if(br == '*'):
+      i = idx + 1
+      cur_branch = git_branches[i]
+    elif(br != cur_branch):
+      branches.append(br)
+    
+  branch_opts = [cur_branch, *branches]
+
+  return branch_opts
+
 # model
 GOO = [
   {
@@ -76,7 +92,7 @@ GOO = [
         'flag': '--branch',
         'info': 'Change branch.',
         'widget': 'Dropdown',
-        'choices': ['1','2'],
+        'choices': list_branches(),
         'options': {
           'message':'blah'
         },
@@ -84,22 +100,6 @@ GOO = [
       }]
   }
 ]
-
-def list_branches():
-  git_branches = os.popen('git branch').read().split()
-  cur_branch = False
-  branches = []
-  for idx, val in enumerate(git_branches):
-    br = val
-    if(br == '*'):
-      i = idx + 1
-      cur_branch = git_branches[i]
-    elif(br != cur_branch):
-      branches.append(br)
-    
-  branch_opts = [cur_branch, *branches]
-
-  return branch_opts
 
 # creates a clean, indexed dictionary
 # with a method to process collections
@@ -112,31 +112,33 @@ class Model(dict):
     if key in self or value is not None:
       dict.__setitem__(self, key, value)
 
-  def transduce(self, keyName, branchKey, collection):
+  def transduce(self, key_name, branch_key, collection):
     if('sub_key' not in self):
       raise NameError('Model requires a submodel key $: Model(<some_str>)')
     else:      
-      self.mapCollection(keyName, branchKey, collection, None)
+      self.mapCollection(key_name, branch_key, collection, parent_key=None)
     return self
 
-  def mapCollection(self, keyName, branchKey, collection, parentKey):
+  def mapCollection(self, key_name, branch_key, collection, parent_key):
     for model in collection:
-      key = model[keyName] if keyName in model else None
+      key = model[key_name] if key_name in model else None
       sub_model_key = self['sub_key']
-      if(key and branchKey and self.hasBranches(branchKey, model)):
+      if(key and branch_key and self.hasBranches(branch_key, model)):
         self[key] = model
         self[key][sub_model_key] = Model()
         # 
-        self.mapCollection(keyName, branchKey, model[branchKey], key)
+        self.mapCollection(key_name, branch_key, model[branch_key], key)
       else:
-        branch = self[parentKey] if parentKey and parentKey in self else None
+        branch = self[parent_key] if parent_key and parent_key in self else None
         if(branch and sub_model_key in branch):
           branch[sub_model_key][key] = model
 
-  def hasBranches(self, branchKey, model):
-    if(branchKey in model and type(model[branchKey]) == list and len(model[branchKey]) > 0):
-      branches = model[branchKey]
-      answer = branches and len(list(filter(lambda b: type(b) == dict, branches))) == len(branches)
+  def hasBranches(self, branch_key, model):
+    branches = model[branch_key] if branch_key in model else None
+    if(branches and type(branches) == list):
+      is_model = lambda b: type(b) == dict
+      models = list(filter(is_model, branches))
+      answer = len(branches) > 0 and len(models) == len(branches)
     else:
       answer = False
     return answer
@@ -170,9 +172,9 @@ isGitDir = os.system('git status 1>'+os.devnull) == 0
   advanced=True,
   clear_before_run=True, # TEST
   show_success_modal=False,
-  # poll_external_updates=True,
-  progress_regex=r"^(?P<stat>.*)$",
-  progress_expr="stat",
+  poll_external_updates=True,
+  progress_regex=r"^(?P<stat>.*)$", # TODO: not working?
+  progress_expr="stat", # TODO: not working?
   richtext_controls=True,
   requires_shell=True,
   supress_gooey_flag=True,
@@ -228,11 +230,11 @@ def main():
     os.system(cmd)
 
 if __name__ == '__main__':
-  main()
-  # if 'gooey-seed-ui' in sys.argv:
-  #   print(json.dumps({'--branch': list_branches() }))
-  # else:
-  #   main()
+  # main()
+  if 'gooey-seed-ui' in sys.argv:
+    print(json.dumps({'commands': list_branches() }))
+  else:
+    main()
 
 def show_error_modal(error_msg):
   """ Spawns a modal with error_msg"""
