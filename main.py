@@ -6,10 +6,6 @@ from colored import stylize, attr, fg
 # model
 GOO = [
   {
-    'name': 'compose',
-    'subs': []
-  },
-  {
     'name': 'commands',
     'label': 'Commands',
     'info': 'Current directory: ',
@@ -62,7 +58,30 @@ GOO = [
   },
   {
     'name': 'settings',
-    'subs': []
+    'label': 'Settings',
+    'info': 'Settings',
+    'gooey_args':[
+      'action',
+      'help',
+      'choices',
+      'gooey_options',
+      'widget'
+    ],
+    'gooey_map':{
+      'info': 'help',
+      'options': 'gooey_options'
+    },
+    'subs': [{
+        'name': 'branch',
+        'flag': '--branch',
+        'info': 'Change branch.',
+        'widget': 'Dropdown',
+        'choices': ['1','2'],
+        'options': {
+          'message':'blah'
+        },
+        'args': ''
+      }]
   }
 ]
 
@@ -169,17 +188,17 @@ def main():
   # transform collection to indexed model
   goo = Model('models')
   goo.transduce('name', 'subs', GOO)
+  # pprint(goo)
 
   # render arguments UI
   if(isGitDir):
     for g in GOO:
-      if(g['name'] == 'commands'):
-        cmd_grp = cmd_parser.add_parser(g['name'])
-        cmd = cmd_grp.add_argument_group(g['label'], g['info'])
-        if(len(g['subs'])):
-          for s in g['subs']:
-            meta_args = ArgModel(s, g['gooey_args'], g['gooey_map'])
-            cmd.add_argument(s['flag'], **meta_args)
+      cmd_grp = cmd_parser.add_parser(g['name'])
+      cmd = cmd_grp.add_argument_group(g['label'], g['info'])
+      if(len(g['subs'])):
+        for s in g['subs']:
+          meta_args = ArgModel(s, g['gooey_args'], g['gooey_map'])
+          cmd.add_argument(s['flag'], **meta_args)
   # else:
   #   gitDir = gooit.add_subparsers(help='git', dest='git')
   #   gitDir.add_argument(metavar="directory path", dest='cwd', help='Choose directory', widget='FileChooser')
@@ -202,7 +221,6 @@ def main():
   # print command
   pipe_sym = ' | ' if os.name is 'nt' else ' && '
   final_command = str.join(pipe_sym, git_cmd)
-  pprint(goo)
   print(stylize('$: ' + final_command, fg("green") + attr("bold")))
 
   # run commands
