@@ -158,7 +158,7 @@ isGitDir = os.system('git status 1>'+os.devnull) == 0
   requires_shell=True,
   supress_gooey_flag=True,
   navigation='TABBED',
-  optional_cols=4,
+  optional_cols=2,
   show_sidebar=False
   ) 
 def main():
@@ -166,7 +166,7 @@ def main():
   gooit = GooeyParser(description="Gooit")
   cmd_parser = gooit.add_subparsers(help='commands', dest='main')
 
-  # transform collection in indexed model
+  # transform collection to indexed model
   goo = Model('models')
   goo.transduce('name', 'subs', GOO)
 
